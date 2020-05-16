@@ -9,6 +9,8 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 import Vuetify from "../plugins/vuetify";
+import router from './routes';
+
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 /**
@@ -30,7 +32,10 @@ Vue.component('app-component', require('./components/App.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+
+
 const app = new Vue({
     vuetify: Vuetify,
+    router: router,
     el: '#app',
 });
