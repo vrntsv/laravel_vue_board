@@ -2,12 +2,12 @@
 <div>
     <v-navigation-drawer absolute temporary v-model="drawer" class="hidden-md-and-up">
         <v-list >
-            <v-list-item  v-for="(item, i) in menuItems" flat :key="`navDrawer${i}`">
+            <v-list-item @click="$router.push(item.route)" v-for="(item, i) in menuItems" text :key="`navDrawer${i}`">
                 <v-list-item-action>
                     <v-icon  v-html="item.icon"/>
                 </v-list-item-action>
                 <v-list-item-content>
-                    <v-list-item-title v-text="item.title"></v-list-item-title>
+                    <v-list-item-title  v-text="item.title"></v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
         </v-list>
@@ -21,7 +21,7 @@
         <v-toolbar-items class="hidden-sm-and-down">
             <v-btn v-for="(item, i) in menuItems" flat :key="`menuItem${i}`" :to="item.route">
                 <v-icon left v-html="item.icon"></v-icon>
-                {{item.title}}
+                <div >{{item.title}}</div>
             </v-btn>
         </v-toolbar-items>
     </v-app-bar>
@@ -57,7 +57,7 @@
 
                         icon: 'create',
                         title: 'Create Advertisement',
-                        route: '/posts/create'
+                        route: '/create'
                     },
                     {
                         icon: 'exit_to_app',

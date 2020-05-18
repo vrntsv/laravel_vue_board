@@ -42,18 +42,19 @@ class Ads extends Model
         parent::__construct($attributes);
     }
 
-    
+
     public function getAllAds()
     {
-        $ad = DB::table('ads')->orderBy('id', 'DESC')->paginate(15);
-        return $ad;
+        $posts = Ads::paginate(10);
+
+        return response($posts, 200);
     }
 
 
     public function getAdById($id)
     {
         $ad = Ads::where('id', $id)->get();
-        return $ad;
+        return $ad[0];
     }
 
 

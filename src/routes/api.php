@@ -19,6 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::group(['as' => 'api.'], function () {
-    Route::get('/', 'AdvertisementController@index');
-    Route::resource('posts', 'AdvertisementController', ['except' => 'index']);
+    Route::resource('posts', 'AdvertisementController');
 });

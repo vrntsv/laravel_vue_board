@@ -12,7 +12,7 @@ class AdvertisementController extends Controller
     {
         $ad = new Ads();
         $allAds = $ad->getAllAds();
-        var_dump($allAds);
+        return $allAds;
 //        return view('welcome', [
 //            'data' => $allAds,
 //            'current_page' => $allAds->currentPage(),
@@ -33,7 +33,6 @@ class AdvertisementController extends Controller
     {
         $advertisementModel = new Ads();
         $advertisementData =  $advertisementModel->getAdById($id);
-
         if (auth()->check() and auth()->user()->id == $advertisementData[0]->user_id) {
             return view('updateAdvertisement', ['advertisementData' => $advertisementData]);
         } else {
@@ -47,12 +46,13 @@ class AdvertisementController extends Controller
 
         $advertisementModel = new Ads();
         $advertisementData =  $advertisementModel->getAdById($id);
-        if (count($advertisementData) > 0){
-            return view('advertisementInfo', ['advertisementData' => $advertisementData]);
-        } else {
-            return redirect('/');
-
-        }
+        return $advertisementData;
+//        if (count($advertisementData) > 0){
+//            return view('advertisementInfo', ['advertisementData' => $advertisementData]);
+//        } else {
+//            return redirect('/');
+//
+//        }
     }
 
 
