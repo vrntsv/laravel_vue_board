@@ -3,7 +3,7 @@
         <v-flex xs12 sm6 offset-sm3>
             <v-card class="ml-2">
                 <v-img v-if="post.image"style="cursor: pointer"
-                       :src="require('../../images/' + post.image)"
+                       :src="require('../../../public/storage/images/' + post.image)"
                     height="300px" @click="$router.push('/posts/'+post.id)"
                 >
                 </v-img>

@@ -7,7 +7,7 @@
         <v-card class="px-4">
                 <v-card-text >
                     <p class="display-1 mb-0">Create Advertisement</p>
-                    <v-form ref="createAdvertisementForm" v-model="isValid">
+                    <v-form ref="createAdvertisementForm" v-model="isValid" method="post">
                         <v-row>
                             <v-col cols="12" sm="6" md="6">
                                 <ValidationProvider rules="required|max:100" v-slot="{ errors }">
@@ -21,7 +21,7 @@
                             </v-col>
 
                             <v-col cols="12" sm="6" md="6">
-                                <ValidationProvider rules="required|phone" v-slot="{ errors }">
+                                <ValidationProvider rules="required" v-slot="{ errors }">
                                     <VuePhoneNumberInput v-model="phone" />
                                 </ValidationProvider>
                             </v-col>
@@ -31,6 +31,7 @@
                                         v-model="fromDateMenu"
                                         :close-on-content-click="false"
                                         :nudge-right="40"
+                                        name="end_date"
                                         transition="scale-transition"
                                         offset-y
                                         max-width="290px"
@@ -57,18 +58,19 @@
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-select
-                                    v-model="e1"
+                                    v-model="country"
                                     :items="countries"
                                     menu-props="auto"
                                     label="Select"
-                                    hide-details
                                     prepend-icon="map"
                                     single-line
                                 ></v-select>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
-                                <ValidationProvider rules="image|size:100" v-slot="{ errors }">
+                                <ValidationProvider rules="size:100" v-slot="{ errors }">
                                     <v-file-input
+                                        v-model="image"
+                                        @change="selectFile"
                                         label="Add image (not required)"
                                         prepend-icon="mdi-camera"
                                     ></v-file-input>
@@ -78,10 +80,11 @@
                             <v-col cols="12">
                                 <ValidationProvider rules="max:500" v-slot="{ errors }">
                                     <v-textarea
+                                        :autoGrow="true"
+                                        v-model="description"
                                         :rules="[rules.required]"
-                                        name="input-7-1"
+                                        name="description"
                                         label="Description"
-                                        hint="Hint text"
                                     ></v-textarea>
                                 </ValidationProvider>
                             </v-col>
@@ -125,21 +128,26 @@
     import { ValidationProvider } from 'vee-validate';
     import VuePhoneNumberInput from 'vue-phone-number-input';
     import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+    import router from '../routes';
     export default {
+        router,
         data: function(){
+
             return {
-                e1: 'USA',
+                country: 'USA',
                 countries: ['USA', 'Ukraine', 'Russia'],
                 title: '',
                 email: '',
                 phone: '',
-                date_end: '',
-                latitude: null,
-                longitude: null,
+                image: null,
+                latitude: '',
+                longitude: '',
+                description: '',
                 fromDateMenu: false,
                 fromDateVal: null,
                 addLocation: false,
                 isValid: false,
+                marker: {lat: 38.899308, lng: -77.024327},
                 formData: [],
                 rules: {
                     required: value => !!value || "Required.",
@@ -156,16 +164,39 @@
         methods:{
             toggleMap() {
                 this.addLocation = !this.addLocation;
+                if (this.addLocation){
+                    this.latitude = this.marker.lat
+                    this.longitude = this.marker.lng
+                }
             },
             updateCoordinates(location) {
-                this.latitude = location.latLng.lat();
-                this.longitude = location.latLng.lng();
+                this.marker.lat = location.latLng.lat();
+                this.marker.lng = location.latLng.lng();
             },
             sendRequest() {
-                console.log(this.$data)
                 if (this.$refs.createAdvertisementForm.validate){
+                    let formData = new FormData();
+                    formData.append('country', this.country);
+                    formData.append('title', this.title);
+                    formData.append('email', this.email);
+                    formData.append('phone', this.phone);
+                    formData.append('addLocation', this.addLocation);
+                    formData.append('image', this.image);
+                    formData.append('latitude', this.latitude);
+                    formData.append('longitude', this.longitude);
+                    formData.append('date_end', this.fromDateVal);
+                    formData.append('description', this.description);
+                    console.log(formData)
+                    let config = { headers: { 'Content-Type': 'multipart/form-data' } }
+                    axios.post('/api/posts/', formData, config)
+                        .then(function(response) {
+
+                            router.push('/posts/' + response.data.id)
+                        })
+                        .catch(error => console.log(error));
                 }
-            }
+            },
+
         },
         components: {
             ValidationProvider,

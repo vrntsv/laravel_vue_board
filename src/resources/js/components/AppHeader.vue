@@ -19,7 +19,7 @@
         <v-toolbar-title>Advertisement board</v-toolbar-title>
         <v-spacer/>
         <v-toolbar-items class="hidden-sm-and-down">
-            <v-btn v-for="(item, i) in menuItems" flat :key="`menuItem${i}`" :to="item.route">
+            <v-btn v-for="(item, i) in menuItems" :key="`menuItem${i}`" :to="item.route">
                 <v-icon left v-html="item.icon"></v-icon>
                 <div >{{item.title}}</div>
             </v-btn>
@@ -37,34 +37,44 @@
         },
         computed: {
             menuItems(){
-                return[
-                    {
-                        icon: 'home',
-                        title: 'Home',
-                        route: '/'
-                    },
-                    {
-                        icon: 'done_all',
-                        title: 'Login',
-                        route: '/login'
-                    },
-                    {
-                        icon: 'account_circle',
-                        title: 'register',
-                        route: '/register'
-                    },
-                    {
+                if (!this.$store.getters.isLoggedIn) {
+                    return [
+                        {
+                            icon: 'home',
+                            title: 'Home',
+                            route: '/'
+                        },
+                        {
+                            icon: 'done_all',
+                            title: 'Login',
+                            route: '/login'
+                        },
+                        {
+                            icon: 'account_circle',
+                            title: 'register',
+                            route: '/register'
+                        },
 
-                        icon: 'create',
-                        title: 'Create Advertisement',
-                        route: '/create'
-                    },
-                    {
-                        icon: 'exit_to_app',
-                        title: 'Logout',
-                        route: '/logout'
-                    },
-                ]
+                    ]
+                } else {
+                    return [
+                        {
+                            icon: 'home',
+                            title: 'Home',
+                            route: '/'
+                        },
+                        {
+                            icon: 'create',
+                            title: 'Create Advertisement',
+                            route: '/create'
+                        },
+                        {
+                            icon: 'exit_to_app',
+                            title: 'Logout',
+                            route: '/logout'
+                        },
+                    ]
+                }
             }
         }
     }

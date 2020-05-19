@@ -23,5 +23,8 @@
 <body>
 <div id="app">
 </div>
+<script>
+    window.auth_user = {!! json_encode($auth_user); !!};
+</script>
 </body>
 </html>
