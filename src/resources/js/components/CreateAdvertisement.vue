@@ -7,17 +7,16 @@
         <v-card class="px-4">
                 <v-card-text >
                     <p class="display-1 mb-0">Create Advertisement</p>
-
-                    <v-form ref="registerForm" v-model="valid" lazy-validation>
+                    <v-form ref="createAdvertisementForm" v-model="isValid">
                         <v-row>
                             <v-col cols="12" sm="6" md="6">
                                 <ValidationProvider rules="required|max:100" v-slot="{ errors }">
-                                    <v-text-field v-model="title" id='title' name="title" type="text" label="Title" :error-messages="errors[0]" required></v-text-field>
+                                    <v-text-field v-model="title" :rules="[rules.required]"  id='title' name="title" type="text" label="Title" :error-messages="errors[0]" required></v-text-field>
                                 </ValidationProvider>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <ValidationProvider rules="required|email" v-slot="{ errors }">
-                                    <v-text-field v-model="email"  name="email" type="text" label="E-mail" :error-messages="errors[0]" required></v-text-field>
+                                    <v-text-field :rules="[rules.required]" v-model="email"  name="email" type="text" label="E-mail" :error-messages="errors[0]" required></v-text-field>
                                 </ValidationProvider>
                             </v-col>
 
@@ -29,7 +28,6 @@
                             <v-col cols="12" sm="6" md="6">
                                 <ValidationProvider rules="required|date_format:yyyy-mm-dd" v-slot="{ errors }">
                                     <v-menu
-
                                         v-model="fromDateMenu"
                                         :close-on-content-click="false"
                                         :nudge-right="40"
@@ -40,6 +38,7 @@
                                     >
                                         <template v-slot:activator="{ on }">
                                             <v-text-field
+                                                :rules="[rules.required]"
                                                 label="From"
                                                 prepend-icon="event"
                                                 readonly
@@ -77,8 +76,9 @@
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col cols="12">
-                                <ValidationProvider rules="required|max:500" v-slot="{ errors }">
+                                <ValidationProvider rules="max:500" v-slot="{ errors }">
                                     <v-textarea
+                                        :rules="[rules.required]"
                                         name="input-7-1"
                                         label="Description"
                                         hint="Hint text"
@@ -110,9 +110,8 @@
                             </v-col>
                             <v-spacer></v-spacer>
                             <v-col class="d-flex ml-auto" cols="12" sm="3" xsm="12">
-                                <v-btn x-large block color="success" type="submit"">Register</v-btn>
+                                <v-btn x-large block color="success" :disabled="!isValid" @click="sendRequest">Register</v-btn>
                             </v-col>
-
                         </v-row>
                     </v-form>
                 </v-card-text>
@@ -127,7 +126,7 @@
     import VuePhoneNumberInput from 'vue-phone-number-input';
     import 'vue-phone-number-input/dist/vue-phone-number-input.css';
     export default {
-        data: function() {
+        data: function(){
             return {
                 e1: 'USA',
                 countries: ['USA', 'Ukraine', 'Russia'],
@@ -141,7 +140,10 @@
                 fromDateVal: null,
                 addLocation: false,
                 isValid: false,
-                formData: []
+                formData: [],
+                rules: {
+                    required: value => !!value || "Required.",
+                }
             }
         },
         computed: {
@@ -159,8 +161,10 @@
                 this.latitude = location.latLng.lat();
                 this.longitude = location.latLng.lng();
             },
-            sendRequest(submitEvent) {
-                this.name = submitEvent.target.elements.name.value
+            sendRequest() {
+                console.log(this.$data)
+                if (this.$refs.createAdvertisementForm.validate){
+                }
             }
         },
         components: {
