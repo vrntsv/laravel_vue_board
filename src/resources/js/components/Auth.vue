@@ -75,7 +75,15 @@
         methods: {
             validate() {
                 if (this.$refs.loginForm.validate()) {
-                    // submit form to server/API here...
+                    axios.post('/api/auth/login ', {'email': this.email, 'password': this.password})
+                        .then(function(response) {
+                            if (this.$store.getters.isLoggedIn) {
+                                router.push('/')
+                            } else {
+                                console.log('errr')
+                            }
+                        })
+                        .catch(error => console.log(error));
                 }
             },
             reset() {

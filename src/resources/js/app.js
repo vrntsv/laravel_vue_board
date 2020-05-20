@@ -8,6 +8,32 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import Vuetify from "../plugins/vuetify";
+import router from './routes';
+import App from "./components/App";
+import moment from 'moment'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import vuetify from '../plugins/vuetify' // path to vuetify export
+import * as VueGoogleMaps from 'vue2-google-maps'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+    state: {
+        user: null
+    },
+    mutations: {
+        setAuthUser(state, user) {
+            state.user = user;
+        }
+    },
+    getters: {
+        isLoggedIn(state) {
+            return state.user !== null;
+        }
+    }
+})
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -19,7 +45,6 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -27,6 +52,28 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
-});
+Vue.filter('truncate', function (text, stop, clamp) {
+    return text.slice(0, stop) + (stop < text.length ? clamp || '...' : '')
+})
+
+Vue.filter('formatDate', function(value) {
+    if (value) {
+        return moment(String(value)).format('MM.DD.YYYY')
+    }
+})
+
+
+Vue.use(VueGoogleMaps, {
+    load: {
+        key: 'AIzaSyBxuJt0FM7ceyYD6i5Y0XI_brWCTULYNd0',
+        libraries: 'places', // This is required if you use the Autocomplete plugin
+    },
+    installComponents: true
+})
+
+new Vue({
+    vuetify,
+    router,
+    store,
+    render: h => h(App)
+}).$mount('#app')
