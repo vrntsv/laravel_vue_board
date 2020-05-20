@@ -46,7 +46,7 @@ class AuthController extends Controller
         if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->respondWithToken($token);
+        return response()->json(compact('token'));
     }
 
     /**
@@ -54,7 +54,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function me()
+    public function me()
     {
         return response()->json(auth('api')->user());
     }

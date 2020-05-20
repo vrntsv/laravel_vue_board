@@ -190,7 +190,6 @@
                     let config = { headers: { 'Content-Type': 'multipart/form-data' } }
                     axios.post('/api/posts/', formData, config)
                         .then(function(response) {
-
                             router.push('/posts/' + response.data.id)
                         })
                         .catch(error => console.log(error));

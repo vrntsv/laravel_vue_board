@@ -5,6 +5,7 @@ import Posts from "./components/Posts";
 import CreateAdvertisement from "./components/CreateAdvertisement";
 import PostInfo from "./components/PostInfo";
 import Auth from "./components/Auth";
+import Logout from "./components/Logout";
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -29,8 +30,12 @@ const router = new VueRouter({
             path: '/login',
             name: 'Auth',
             component: Auth
+        },
+        {
+            path: '/logout',
+            name: 'Logout',
+            component: Logout
         }
-
     ],
 });
 

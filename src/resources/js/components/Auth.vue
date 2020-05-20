@@ -65,7 +65,15 @@
 </template>
 
 <script>
+    import { ValidationProvider } from 'vee-validate';
+    import VuePhoneNumberInput from 'vue-phone-number-input';
+    import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+    import router from '../routes';
+    import store from '../store'
+
     export default {
+        store,
+        router,
         name: "Auth",
         computed: {
             passwordMatch() {
@@ -75,9 +83,19 @@
         methods: {
             validate() {
                 if (this.$refs.loginForm.validate()) {
-                    axios.post('/api/auth/login ', {'email': this.email, 'password': this.password})
+                    console.log({'email': this.loginEmail, 'password': this.loginPassword});
+
+                    axios.post('/api/auth/login',
+                        {
+                            'email': this.loginEmail,
+                            'password': this.loginPassword},
+                        {
+                            headers: {'Accept': 'application/json'}
+                        })
                         .then(function(response) {
-                            if (this.$store.getters.isLoggedIn) {
+                            console.log(response);
+                            store.commit('loginSuccess', response.data.token)
+                            if (store.getters.isLoggedIn) {
                                 router.push('/')
                             } else {
                                 console.log('errr')
@@ -93,37 +111,39 @@
                 this.$refs.form.resetValidation();
             }
         },
-        data: () => ({
-            dialog: true,
-            tab: 0,
-            tabs: [
-                {name:"Login", icon:"mdi-account"},
-                {name:"Register", icon:"mdi-account-outline"}
-            ],
-            valid: true,
+        data: function (){
+            return {
+                dialog: true,
+                tab: 0,
+                tabs: [
+                    {name:"Login", icon:"mdi-account"},
+                    {name:"Register", icon:"mdi-account-outline"}
+                ],
+                valid: true,
 
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            verify: "",
-            loginPassword: "",
-            loginEmail: "",
-            loginEmailRules: [
-                v => !!v || "Required",
-                v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-            ],
-            emailRules: [
-                v => !!v || "Required",
-                v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-            ],
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                verify: "",
+                loginPassword: "",
+                loginEmail: "",
+                loginEmailRules: [
+                    v => !!v || "Required",
+                    v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+                ],
+                emailRules: [
+                    v => !!v || "Required",
+                    v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+                ],
 
-            show1: false,
-            rules: {
-                required: value => !!value || "Required.",
-                min: v => (v && v.length >= 8) || "Min 8 characters"
+                show1: false,
+                rules: {
+                    required: value => !!value || "Required.",
+                    min: v => (v && v.length >= 4) || "Min 8 characters"
+                }
             }
-        })
+        }
     }
 </script>
 
