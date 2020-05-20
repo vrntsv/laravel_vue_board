@@ -11,7 +11,6 @@ const store = new Vuex.Store({
         loading: false,
         auth_error: null,
         reg_error: null,
-        registeredUser: null,
     },
     getters: {
         isLoading(state) {
@@ -23,7 +22,7 @@ const store = new Vuex.Store({
         isLoggedIn(state) {
             return state.isLoggedIn;
         },
-        currentUser(state) {
+        getCurrentUser(state) {
             return state.currentUser;
         },
         authError(state) {
@@ -47,20 +46,16 @@ const store = new Vuex.Store({
             state.isLoggedIn = true;
             state.loading = false;
             state.token = token;
-            console.log(state.token);
-            console.log(state.isLoggedin);
             const config = {
                 headers: { Authorization: `Bearer ${token}` }
             };
             const body = {
             };
-            console.log(config);
             axios.post('/api/auth/me', body, config)
                 .then(function (response) {
-                    console.log(response);
-                    state.currentUser = response;
+
+                    state.currentUser = response.data;
                 }).catch(error => console.log(error));
-            localStorage.setItem('user', JSON.stringify(state.currentUser));
         },
         loginFailed(state, payload) {
             state.loading = false;
@@ -68,15 +63,11 @@ const store = new Vuex.Store({
         },
         logout(state) {
             if (state.token) {
-                console.log('----------')
-                console.log(state.isLoggedin)
-                console.log('----------')
                 const config = {
                     headers: {Authorization: `Bearer ${state.token}`}
                 };
                 const body = {};
                 axios.post('/api/auth/logout', body, config)
-                localStorage.removeItem('user');
                 state.isLoggedIn = false;
                 state.currentUser = null;
                 router.push('/')
@@ -89,8 +80,10 @@ const store = new Vuex.Store({
             }
         },
         registerSuccess(state, payload) {
+            state.isLoggedIn = true;
             state.reg_error = null;
-            state.registeredUser = payload.user;
+            state.currentUser = payload.data.user;
+            state.token = payload.data.token;
         },
         registerFailed(state, payload) {
             state.reg_error = payload.error;

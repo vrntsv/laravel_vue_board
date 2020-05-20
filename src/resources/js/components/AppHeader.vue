@@ -45,14 +45,9 @@
                             route: '/'
                         },
                         {
-                            icon: 'done_all',
-                            title: 'Login',
-                            route: '/login'
-                        },
-                        {
                             icon: 'account_circle',
-                            title: 'register',
-                            route: '/register'
+                            title: 'Auth',
+                            route: '/auth'
                         },
 
                     ]

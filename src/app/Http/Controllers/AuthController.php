@@ -23,16 +23,20 @@ class AuthController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required | email',
-            'password' => 'required | min:6'
+            'email' => 'required|email',
+            'password' => 'required|min:6'
         ]);
-
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->save();
-        return response()->json(['user' => $user]);
+        $credentials = request(['email', 'password']);
+        $token = auth('api')->attempt($credentials);
+        if (!$token) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json(['user' => $user, 'token' => $token]);
     }
 
     /**

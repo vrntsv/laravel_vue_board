@@ -10,7 +10,10 @@
                     <v-tab-item>
                         <v-card class="px-4">
                             <v-card-text>
-                                <v-form ref="loginForm" v-model="valid" lazy-validation>
+                                <v-form ref="loginForm" v-model="valid">
+                                    <v-alert v-if="loginError" type="error">
+                                        It seems to be an error. Please, try inputing other credentials
+                                    </v-alert>
                                     <v-row>
                                         <v-col cols="12">
                                             <v-text-field v-model="loginEmail" :rules="loginEmailRules" label="E-mail" required></v-text-field>
@@ -22,7 +25,7 @@
                                         </v-col>
                                         <v-spacer></v-spacer>
                                         <v-col class="d-flex" cols="12" sm="3" xsm="12" align-end>
-                                            <v-btn x-large block :disabled="!valid" color="success" @click="validate"> Login </v-btn>
+                                            <v-btn x-large block :disabled="!valid" color="success" @click="validateLogin"> Login </v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-form>
@@ -32,13 +35,12 @@
                     <v-tab-item>
                         <v-card class="px-4">
                             <v-card-text>
-                                <v-form ref="registerForm" v-model="valid" lazy-validation>
+                                <v-form ref="registerForm" v-model="valid">
+                                    <v-alert v-if="registerError" type="error">
+                                        It seems to be an error. Please, try inputing other credentials                                    </v-alert>
                                     <v-row>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="firstName" :rules="[rules.required]" label="First Name" maxlength="20" required></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lastName" :rules="[rules.required]" label="Last Name" maxlength="20" required></v-text-field>
+                                        <v-col cols="12">
+                                            <v-text-field v-model="userName" :rules="[rules.required]" label="User name" maxlength="20" required></v-text-field>
                                         </v-col>
                                         <v-col cols="12">
                                             <v-text-field v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
@@ -51,7 +53,7 @@
                                         </v-col>
                                         <v-spacer></v-spacer>
                                         <v-col class="d-flex ml-auto" cols="12" sm="3" xsm="12">
-                                            <v-btn x-large block :disabled="!valid" color="success" @click="validate">Register</v-btn>
+                                            <v-btn x-large block :disabled="!valid" color="success" @click="validateRegister">Register</v-btn>
                                         </v-col>
                                     </v-row>
                                 </v-form>
@@ -79,10 +81,8 @@
             }
         },
         methods: {
-            validate() {
+            validateLogin() {
                 if (this.$refs.loginForm.validate()) {
-                    console.log({'email': this.loginEmail, 'password': this.loginPassword});
-
                     axios.post('/api/auth/login',
                         {
                             'email': this.loginEmail,
@@ -92,15 +92,32 @@
                         })
                         .then((response) => {
                             this.$store.commit('loginSuccess', response.data.token)
-                            console.log(this.$store.getters.isLoggedIn);
-                            if (this.$store.getters.isLoggedIn == true) {
+                            if (this.$store.getters.isLoggedIn) {
                                 router.push('/')
-                            } else {
-                                console.log('errr')
                             }
                         })
-                        .catch(error => console.log(error));
+                        .catch(this.loginError=true);
                 }
+            },
+            validateRegister(){
+                if (this.$refs.registerForm.validate()){
+                    axios.post('/api/auth/register',
+                        {
+                            'name': this.userName,
+                            'email': this.email,
+                            'password': this.password},
+                        {
+                            headers: {'Accept': 'application/json'}
+                        })
+                        .then((response) => {
+                            this.$store.commit('registerSuccess', response)
+                            if (this.$store.getters.isLoggedIn) {
+                                router.push('/')
+                            }
+                        })
+                        .catch(this.registerError=true);
+                    }
+
             },
             reset() {
                 this.$refs.form.reset();
@@ -118,9 +135,9 @@
                     {name:"Register", icon:"mdi-account-outline"}
                 ],
                 valid: true,
-
-                firstName: "",
-                lastName: "",
+                registerError: false,
+                loginError: false,
+                userName: "",
                 email: "",
                 password: "",
                 verify: "",

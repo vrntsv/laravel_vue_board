@@ -13,11 +13,6 @@ class AdvertisementController extends Controller
         $ad = new Ads();
         $allAds = $ad->getAllAds();
         return $allAds;
-//        return view('welcome', [
-//            'data' => $allAds,
-//            'current_page' => $allAds->currentPage(),
-//            'last_page' => $allAds->lastPage()
-//        ]);
     }
 
     public function create()
@@ -58,20 +53,15 @@ class AdvertisementController extends Controller
 
     public function store(Request $request)
     {
-//        $this->validate($request, [
-//            'title' => 'required|max:100',
-//            'phone' => 'required|min:10|max:13',
-//            'email' => 'required|email',
-//            'end_date' => 'required|date_format:Y-m-d|after:today',
-//            'description' => 'required',
-//            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
-//
-//        ]);
-//        print_r('asfsafafasf');
-//        print_r($request->data);
-//        print_r($request->file('image'));
-//        print_r($request->data->country);
-//        print_r($request->country);
+        $this->validate($request, [
+            'title' => 'required|max:100',
+            'phone' => 'required|min:10|max:13',
+            'email' => 'required|email',
+            'date_end' => 'required|date_format:Y-m-d',
+            'description' => 'required',
+
+        ]);
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/images/';
@@ -92,7 +82,7 @@ class AdvertisementController extends Controller
         }
         $createdAdId = $advertisementModel->insertGetId(
             [
-                'user_id'=>1,
+                'user_id'=>$request->input('user_id'),
                 'title'=>$request->input('title'),
                 'description'=>$request->input('description'),
                 'phone'=>$request->input('phone'),
@@ -110,58 +100,56 @@ class AdvertisementController extends Controller
     }
 
 
-    public function update(Request $request, $updateId=null)
+    public function update(Request $request)
     {
-        if (auth()->check() and $request->input('user_id') == auth()->user()->id) {
-            $this->validate($request, [
-                'title' => 'required|max:100',
-                'full_number' => 'required|min:10|max:13',
-                'email' => 'required|email',
-                'end_date' => 'required|date_format:Y-m-d|after:today',
-                'description' => 'required',
-                'image' => 'image|mimes:jpeg,png,jpg|max:2048'
+        $this->validate($request, [
+            'title' => 'required|max:100',
+            'phone' => 'required|min:10|max:13',
+            'email' => 'required|email',
+            'date_end' => 'required|date_format:Y-m-d',
+            'description' => 'required',
 
-            ]);
+        ]);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/storage/images/';
+            $uploadFileName = $file->getClientOriginalName();
 
-            if ($request->exists('saved_image') and !$request->exists('saved_image')) {
-                $imageName = $request->input('saved_image');
-            } else {
-                $imageName = null;
-            }
-            if ($request->image) {
-                $imageName = time().'.'.$request->image->getClientOriginalExtension();
-                $request->image->move(public_path('images'), $imageName);
-
-            }
-
-            $advertisementModel = new Ads();
-            if ($request->input('addLocation') == 'False') {
-                $latitude = null;
-                $longitude = null;
-
-            } else {
-                $latitude = $request->input('latitude');
-                $longitude = $request->input('longitude');
-            }
-            if ($updateId) {
-                $advertisementModel->where('id', $request->input('ad_id'))->update(
-                    [
-                        'title' => $request->input('title'),
-                        'description' => $request->input('description'),
-                        'phone' => $request->input('full_number'),
-                        'country' => $request->input('country'),
-                        'email' => $request->input('email'),
-                        'end_date' => $request->input('end_date'),
-                        'image' => $imageName,
-                        'latitude' => $latitude,
-                        'longitude' => $longitude
-                    ]
-                );
-            }
-            return redirect(route('posts.show', $request->input('ad_id')));
+            $file->move($uploadDir, $uploadFileName);
         }else{
-            return redirect(route('posts.index'));
+            $uploadFileName = null;
+            if ($request->input('prevImage')){
+                $uploadFileName = $request->input('prevImage');
+            }
         }
+
+        $advertisementModel = new Ads();
+        if ($request->input('addLocation') == "false") {
+            $latitude = null;
+            $longitude = null;
+
+        } else {
+            $latitude = $request->input('latitude');
+            $longitude = $request->input('longitude');
+        }
+        $advertisementModel->where('id', $request->input('ad_id'))->update(
+            [
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'phone' => $request->input('phone'),
+                'country' => $request->input('country'),
+                'email' => $request->input('email'),
+                'end_date' => $request->input('date_end'),
+                'image' => $uploadFileName,
+                'latitude' => $latitude,
+                'longitude' => $longitude
+            ]
+        );
+
+        return response()->json([
+            'id' => $request->input('ad_id'),
+        ]);
+
     }
 
 }

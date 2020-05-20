@@ -8,7 +8,11 @@
                 </div>
                 <div class="col-md-7 col-sm-7 col-xs-12">
                     <div class="pl-6">
-                        <p class="display-1 mb-0">{{post.title}}</p>
+                        <p class="display-1 mb-0">{{post.title}}
+                        <v-btn v-if="this.$store.getters.isLoggedIn && this.post.user_id == this.$store.getters.getCurrentUser.id" fab small @click="$router.push('/posts/' + post.id + '/edit')" color="primary" dark>
+                            <v-icon dark>create</v-icon>
+                        </v-btn>
+                        </p>
                         <v-card-subtitle class="pa-0">
                             <p class="headline font-weight-light "> {{post.country}}</p>
                         </v-card-subtitle>
@@ -86,12 +90,7 @@
             axios.get('/api/posts/' + id)
                 .then(function (resp) {
                     app.post = resp.data;
-                    console.log(app.post)
                 })
-                .catch(function (resp) {
-                    console.log(resp);
-                    alert("Could not load companies");
-                });
         },
 
     }

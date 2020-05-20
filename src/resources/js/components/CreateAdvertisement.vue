@@ -7,6 +7,9 @@
         <v-card class="px-4">
                 <v-card-text >
                     <p class="display-1 mb-0">Create Advertisement</p>
+                    <v-alert v-if="hasError" type="error">
+                        It seems to be an error. Please, try inputing other data
+                    </v-alert>
                     <v-form ref="createAdvertisementForm" v-model="isValid" method="post">
                         <v-row>
                             <v-col cols="12" sm="6" md="6">
@@ -70,7 +73,7 @@
                                 <ValidationProvider rules="size:100" v-slot="{ errors }">
                                     <v-file-input
                                         v-model="image"
-                                        @change="selectFile"
+                                        accept="image/*"
                                         label="Add image (not required)"
                                         prepend-icon="mdi-camera"
                                     ></v-file-input>
@@ -134,6 +137,7 @@
         data: function(){
 
             return {
+                hasError: false,
                 country: 'USA',
                 countries: ['USA', 'Ukraine', 'Russia'],
                 title: '',
@@ -177,6 +181,7 @@
                 if (this.$refs.createAdvertisementForm.validate){
                     let formData = new FormData();
                     formData.append('country', this.country);
+                    formData.append('user_id', this.$store.getters.getCurrentUser.id);
                     formData.append('title', this.title);
                     formData.append('email', this.email);
                     formData.append('phone', this.phone);
@@ -186,13 +191,12 @@
                     formData.append('longitude', this.longitude);
                     formData.append('date_end', this.fromDateVal);
                     formData.append('description', this.description);
-                    console.log(formData)
                     let config = { headers: { 'Content-Type': 'multipart/form-data' } }
                     axios.post('/api/posts/', formData, config)
                         .then(function(response) {
                             router.push('/posts/' + response.data.id)
                         })
-                        .catch(error => console.log(error));
+                        .catch(this.hasError=true);
                 }
             },
 

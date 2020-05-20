@@ -8,20 +8,27 @@
                 >
                 </v-img>
                 <v-img v-else src="https://sisterhoodofstyle.com/wp-content/uploads/2018/02/no-image-1.jpg"
-                       height="300px" @click="$router.push('/posts/'+post.id)"></v-img>
+                       height="300px" @click="$router.push('/posts/'+post.id)">
+
+                </v-img>
+
                 <v-card-title primary-title>
                     <div>
                         <div class="headline" style="cursor: pointer" @click="$router.push('/posts/'+post.id)">{{post.title}}</div>
                         <span class="grey--text">{{post.country}}</span>
                     </div>
+                    <v-spacer></v-spacer>
+                    <v-btn v-if="this.$store.getters.isLoggedIn && this.post.user_id == $store.getters.getCurrentUser.id" fab small @click="$router.push('/posts/' + post.id + '/edit')" color="primary" dark>
+                        <v-icon dark>create</v-icon>
+                    </v-btn>
                 </v-card-title>
                 <v-card-actions>
                     <span class="grey--text">{{post.date_posted | formatDate}}</span>
-                    <v-spacer></v-spacer>
                     <v-btn icon @click.native="show = !show">
                         <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
                     </v-btn>
                 </v-card-actions>
+
                 <v-slide-y-transition style="cursor: pointer">
                     <v-card-text v-show="show">
                         Description:

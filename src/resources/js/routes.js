@@ -5,6 +5,7 @@ import Posts from "./components/Posts";
 import CreateAdvertisement from "./components/CreateAdvertisement";
 import PostInfo from "./components/PostInfo";
 import Auth from "./components/Auth";
+import EditPost from "./components/EditPost";
 import Logout from "./components/Logout";
 Vue.use(VueRouter)
 
@@ -22,12 +23,17 @@ const router = new VueRouter({
             component: PostInfo
         },
         {
+            path: '/posts/:id/edit',
+            name: 'postEdit',
+            component: EditPost,
+        },
+        {
             path: '/create',
             name: 'createAdvertisement',
             component: CreateAdvertisement
         },
         {
-            path: '/login',
+            path: '/auth',
             name: 'Auth',
             component: Auth
         },
