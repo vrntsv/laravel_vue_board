@@ -69,10 +69,8 @@
     import VuePhoneNumberInput from 'vue-phone-number-input';
     import 'vue-phone-number-input/dist/vue-phone-number-input.css';
     import router from '../routes';
-    import store from '../store'
 
     export default {
-        store,
         router,
         name: "Auth",
         computed: {
@@ -92,10 +90,10 @@
                         {
                             headers: {'Accept': 'application/json'}
                         })
-                        .then(function(response) {
-                            console.log(response);
-                            store.commit('loginSuccess', response.data.token)
-                            if (store.getters.isLoggedIn) {
+                        .then((response) => {
+                            this.$store.commit('loginSuccess', response.data.token)
+                            console.log(this.$store.getters.isLoggedIn);
+                            if (this.$store.getters.isLoggedIn == true) {
                                 router.push('/')
                             } else {
                                 console.log('errr')

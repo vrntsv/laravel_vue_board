@@ -37,7 +37,7 @@
         },
         computed: {
             menuItems(){
-                if (!this.$store.getters.isLoggedIn) {
+                if (!this.$store.state.isLoggedIn) {
                     return [
                         {
                             icon: 'home',

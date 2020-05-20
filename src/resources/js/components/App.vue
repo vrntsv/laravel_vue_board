@@ -11,9 +11,6 @@
 <script>
     import AppHeader from './AppHeader.vue'
     export default {
-        mounted() {
-            this.$store.commit('setAuthUser', window.auth_user);
-        },
         components:{
             AppHeader
         }

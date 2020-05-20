@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import router from "./routes";
 
 Vue.use(Vuex);
 const store = new Vuex.Store({
@@ -16,8 +17,11 @@ const store = new Vuex.Store({
         isLoading(state) {
             return state.loading;
         },
-        isLoggedin(state) {
-            return state.isLoggedin;
+        getToken(state) {
+            return state.token;
+        },
+        isLoggedIn(state) {
+            return state.isLoggedIn;
         },
         currentUser(state) {
             return state.currentUser;
@@ -40,9 +44,11 @@ const store = new Vuex.Store({
         loginSuccess(state, token) {
 
             state.auth_error = null;
-            state.isLoggedin = true;
+            state.isLoggedIn = true;
             state.loading = false;
             state.token = token;
+            console.log(state.token);
+            console.log(state.isLoggedin);
             const config = {
                 headers: { Authorization: `Bearer ${token}` }
             };
@@ -61,9 +67,26 @@ const store = new Vuex.Store({
             state.auth_error = payload.error;
         },
         logout(state) {
-            localStorage.removeItem('user');
-            state.isLoggedin = false;
-            state.currentUser = null;
+            if (state.token) {
+                console.log('----------')
+                console.log(state.isLoggedin)
+                console.log('----------')
+                const config = {
+                    headers: {Authorization: `Bearer ${state.token}`}
+                };
+                const body = {};
+                axios.post('/api/auth/logout', body, config)
+                localStorage.removeItem('user');
+                state.isLoggedIn = false;
+                state.currentUser = null;
+                router.push('/')
+
+            } else {
+                state.isLoggedin = false;
+                state.currentUser = null;
+                router.push('/')
+
+            }
         },
         registerSuccess(state, payload) {
             state.reg_error = null;

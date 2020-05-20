@@ -40,8 +40,8 @@ Vue.use(VueGoogleMaps, {
 })
 
 new Vue({
+    store,
     vuetify,
     router,
-    store,
     render: h => h(App)
 }).$mount('#app')
